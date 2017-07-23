@@ -41,6 +41,11 @@ void setup() {
 
 
 void loop() {
+  for (int j = 0; j < 10; j++) {
+    for (int i = 1; i <= N_COLORS; i++ ) {
+      merge(colors[i % N_COLORS], (j + i) % 2, 2);
+    }
+  }
   stack(colors[4], 0, 1, 5);
   for (int i = 0; i < N_COLORS - 2; i++) {
     stack(colors[i], colors[(i - 1) % N_COLORS], i % 2, 0);
@@ -93,6 +98,25 @@ void dither(uint8_t wait) {
     delay(wait);
   }
   delay(250); // Hold image for 1/4 sec
+}
+
+// Lights merge together either from top and bottom or apart from middle
+void merge(uint32_t c1, boolean fromEdges, uint8_t wait) {
+  
+    for (int i = 0; i < N_LEDS / 2 - 1; i++) {
+      for (int k = 0; k <= i; k++) {
+          uint32_t dimmedColor = dimColor(c1, (1.0 + k) / (1.0 + i));
+          if (fromEdges) {
+            strip.setPixelColor(k, dimmedColor);
+            strip.setPixelColor(N_LEDS - 1 - k, dimmedColor);
+          } else {
+            strip.setPixelColor(N_LEDS / 2 - 1 - k, dimmedColor);
+            strip.setPixelColor(N_LEDS / 2 + k, dimmedColor);
+          }
+      }
+      strip.show();
+      delay(wait); 
+    }
 }
 
 // Sine wave effect
