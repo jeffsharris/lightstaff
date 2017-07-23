@@ -4,8 +4,16 @@
   #include <avr/power.h>
 #endif
 
-int dataPin = 6;
-int clockPin = 12;
+ #if defined(USB_SERIAL) || defined(USB_SERIAL_ADAFRUIT)
+ // this is for teensyduino support
+ int dataPin = 2;
+ int clockPin = 1;
+ #else 
+ // these are the pins we use for the LED belt kit using
+ // the Leonardo pinouts
+ int dataPin = 16;
+ int clockPin = 15;
+ #endif
 
 
 
