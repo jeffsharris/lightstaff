@@ -41,9 +41,9 @@ void setup() {
 
 
 void loop() {
-  for (int i = 1; i < N_COLORS; i++) {
-   candyCane(colors[i], colors[(i - 1) % N_COLORS], 3, 7, 100);
-  }
+  dither(40);
+  rainbowCycleWave(0);
+
   for (int j = 0; j < 10; j++) {
     for (int i = 1; i <= N_COLORS; i++ ) {
       merge(colors[i % N_COLORS], (j + i) % 2, 2);
@@ -53,7 +53,9 @@ void loop() {
   for (int i = 0; i < N_COLORS - 2; i++) {
     stack(colors[i], colors[(i - 1) % N_COLORS], i % 2, 0);
   }
-rainbowCycleWave(0);
+  for (int i = 1; i < N_COLORS; i++) {
+   candyCane(colors[i], colors[(i - 1) % N_COLORS], 3, 7, 100);
+  }
   
 }
 
@@ -83,7 +85,7 @@ void dither(uint8_t wait) {
 
   // Determine highest bit needed to represent pixel index
   int hiBit = 0;
-  int n = strip.numPixels() - 1;
+  int n = N_LEDS - 1;
   for(int bit=1; bit < 0x8000; bit <<= 1) {
     if(n & bit) hiBit = bit;
   }
