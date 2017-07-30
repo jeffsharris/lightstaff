@@ -34,14 +34,13 @@ void setup() {
   #endif
   // End of trinket special code
 
-
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 }
 
 
 void loop() {
-  dither(40);
+  dither(20);
   rainbowCycleWave(0);
 
   for (int j = 0; j < 10; j++) {
@@ -62,7 +61,7 @@ void loop() {
 void rainbowCycleWave(uint8_t wait) {
   uint16_t i, j;
 
-  for (j=0; j < 384 * 3; j++) {     // 5 cycles of all 384 colors in the wheel
+  for (j=0; j < 384 * 3; j++) {     // 3 cycles of all 384 colors in the wheel
     for (i=0; i < N_LEDS; i++) {
       // tricky math! we use each pixel as a fraction of the full 384-color
       // wheel (thats the i / strip.numPixels() part)
@@ -79,8 +78,8 @@ void rainbowCycleWave(uint8_t wait) {
 // sparkly and almost random, but actually follows a specific order.
 void dither(uint8_t wait) {
   uint32_t rainbowColors[N_LEDS];  // Make the dither pattern transition into the rainbowCycleWave pattern
-  for (int i=0; i < N_LEDS; i++) {
-    rainbowColors[i] = Wheel(((i * 384 / N_LEDS)) % 384);
+  for (uint16_t i=0; i < N_LEDS; i++) {
+    rainbowColors[i] = Wheel((i * 384 / N_LEDS) % 384);
   }
 
   // Determine highest bit needed to represent pixel index
