@@ -106,8 +106,8 @@ void setup() {
 
 
 void loop() {
-	// Make changes to the scene if necessary
-	scene_update();
+    // Make changes to the scene if necessary
+    scene_update();
 
     // Perform all the actor state updates
     actors_update();
@@ -121,11 +121,11 @@ void loop() {
 }
 
 void scene_init() {
-	scene_12_init();
+    scene_12_init();
 }
 
 void scene_update() {
-	scene_12_update();
+    scene_12_update();
 }
 
 void scene_1_init() {
@@ -180,8 +180,8 @@ void scene_5_init() {
         actors[a].palette = full_rgb;
         actors[a].length = 3 + random() % 3;
         actors[a].speed = random() % 2 + 1;
-		actors[a].counter = 1;  // counter is the number of pixels to skip
-		actors[a].rate = 1.0; // update rate
+        actors[a].counter = 1;  // counter is the number of pixels to skip
+        actors[a].rate = 1.0; // update rate
     }
     for (int a = 10; a < n_actors; a++) {
         actors[a].kind = slow_sparkle;
@@ -199,8 +199,8 @@ void scene_6_init() {
         actors[a].palette = palette_1;
         actors[a].length = 3 + random() % 3;
         actors[a].speed = random() % 2 + 1;
-		actors[a].counter = 1;  // counter is the number of pixels to skip
-		actors[a].rate = 1.0; // update rate
+        actors[a].counter = 1;  // counter is the number of pixels to skip
+        actors[a].rate = 1.0; // update rate
     }
     // actors[n_actors-1].kind = shimmer;
     actors[n_actors-1].kind = sparkle;
@@ -220,37 +220,37 @@ void scene_7_init() {
 
 void scene_8_init() {
     // Upward spirals with randomizing colors and a few persistent bees
-	// Disco princess
+    // Disco princess
     n_actors = 20;
     background = fade;
     background_fade_rate = 0.1;
     for (int a = 0; a < n_actors - 1; a++) {
-		if (a >= 5) {
-			actors[a].kind = bee;
-			actors[a].palette = palette_1;
-			actors[a].speed = 40; // Update speed / 50 frames
+        if (a >= 5) {
+            actors[a].kind = bee;
+            actors[a].palette = palette_1;
+            actors[a].speed = 40; // Update speed / 50 frames
 
-		} else {
-			actors[a].kind = spiral;
-			actors[a].palette = palette_2;
-			actors[a].length = 5;
-			actors[a].speed = 3;
-			actors[a].counter = 1;  // counter is the number of pixels to skip
-			actors[a].rate = 1.0; // update rate
-		}
+        } else {
+            actors[a].kind = spiral;
+            actors[a].palette = palette_2;
+            actors[a].length = 5;
+            actors[a].speed = 3;
+            actors[a].counter = 1;  // counter is the number of pixels to skip
+            actors[a].rate = 1.0; // update rate
+        }
     }
     actors[n_actors-1].kind = shimmer;
 }
 
 void scene_8_update() {
-	// Randomize the spiral colors
-	for (int a = 0; a < n_actors - 1; a++) {
-		if (a < 10) {
-			if (random(1000) < 100) {
-				actors[a].color = random_palette_color(actors[a].palette);
-			}
-		}
-	}
+    // Randomize the spiral colors
+    for (int a = 0; a < n_actors - 1; a++) {
+        if (a < 10) {
+            if (random(1000) < 100) {
+                actors[a].color = random_palette_color(actors[a].palette);
+            }
+        }
+    }
 }
 
 void scene_9_init() {
@@ -259,37 +259,37 @@ void scene_9_init() {
     background = shimmer_fade;
     background_fade_rate = 0.3;
     for (int a = 0; a < n_actors; a++) {
-		if (a >= 5) {
-			actors[a].kind = bee;
-			actors[a].palette = white;
-			actors[a].speed = 40; // Update speed / 50 frames
+        if (a >= 5) {
+            actors[a].kind = bee;
+            actors[a].palette = white;
+            actors[a].speed = 40; // Update speed / 50 frames
             // TODO: speed up sparklers
-			/*
-			 *actors[a].kind = sparkler;
-			 *actors[a].palette = white;
-			 *actors[a].rate = 0.1;
-			 */
+            /*
+             *actors[a].kind = sparkler;
+             *actors[a].palette = white;
+             *actors[a].rate = 0.1;
+             */
 
-		} else {
-			actors[a].kind = spiral;
-			actors[a].palette = palette_2;
-			actors[a].length = 5;
-			actors[a].speed = 3;
-			actors[a].counter = 1;  // counter is the number of pixels to skip
-			actors[a].rate = 1.0; // update rate
-		}
+        } else {
+            actors[a].kind = spiral;
+            actors[a].palette = palette_2;
+            actors[a].length = 5;
+            actors[a].speed = 3;
+            actors[a].counter = 1;  // counter is the number of pixels to skip
+            actors[a].rate = 1.0; // update rate
+        }
     }
 }
 
 void scene_9_update() {
-	// Randomize the spiral colors
-	for (int a = 0; a < n_actors; a++) {
-		if (a < 10) {
-			if (random(1000) < 800) {
-				actors[a].color = random_palette_color(actors[a].palette);
-			}
-		}
-	}
+    // Randomize the spiral colors
+    for (int a = 0; a < n_actors; a++) {
+        if (a < 10) {
+            if (random(1000) < 800) {
+                actors[a].color = random_palette_color(actors[a].palette);
+            }
+        }
+    }
 }
 
 void scene_10_init() {
@@ -297,103 +297,103 @@ void scene_10_init() {
     background = shimmer_fade;
     background_fade_rate = 0.7;
     for (int a = 0; a < n_actors; a++) {
-		if (a >= 10) {
-			actors[a].kind = sparkle;
-			actors[a].palette = palette_3;
+        if (a >= 10) {
+            actors[a].kind = sparkle;
+            actors[a].palette = palette_3;
         } else if (a >= 5) {
-			actors[a].kind = sparkle;
-			actors[a].palette = white;
-		} else {
-			actors[a].kind = spiral;
-			actors[a].palette = palette_3;
-			actors[a].length = 5;
-			actors[a].speed = 3;
-			actors[a].counter = 1;  // counter is the number of pixels to skip
-			actors[a].rate = 1.0; // update rate
-		}
+            actors[a].kind = sparkle;
+            actors[a].palette = white;
+        } else {
+            actors[a].kind = spiral;
+            actors[a].palette = palette_3;
+            actors[a].length = 5;
+            actors[a].speed = 3;
+            actors[a].counter = 1;  // counter is the number of pixels to skip
+            actors[a].rate = 1.0; // update rate
+        }
     }
 }
 
 void scene_10_update() {
-	// Randomize the spiral colors
-	for (int a = 0; a < n_actors; a++) {
-		if (a < 5) {
-			if (random(1000) < 800) {
-				actors[a].color = random_palette_color(actors[a].palette);
-			}
-		}
-	}
+    // Randomize the spiral colors
+    for (int a = 0; a < n_actors; a++) {
+        if (a < 5) {
+            if (random(1000) < 800) {
+                actors[a].color = random_palette_color(actors[a].palette);
+            }
+        }
+    }
 }
 
 void scene_11_init() {
-	// Much more strob-y fire
+    // Much more strob-y fire
     n_actors = 20;
-	// Remove this and it gets even stronger
+    // Remove this and it gets even stronger
     background = fade;
     background_fade_rate = 0.7;
     for (int a = 0; a < n_actors; a++) {
-		if (a >= 15) {
-			actors[a].kind = sparkle;
-			actors[a].palette = palette_3;
+        if (a >= 15) {
+            actors[a].kind = sparkle;
+            actors[a].palette = palette_3;
         } else if (a >= 10) {
-			actors[a].kind = sparkle;
-			actors[a].palette = white;
-		} else {
-			actors[a].kind = spiral;
-			actors[a].palette = palette_3;
-			actors[a].length = 5;
-			actors[a].speed = 3;
-			actors[a].counter = 1;  // counter is the number of pixels to skip
-			actors[a].rate = 1.0; // update rate
-		}
+            actors[a].kind = sparkle;
+            actors[a].palette = white;
+        } else {
+            actors[a].kind = spiral;
+            actors[a].palette = palette_3;
+            actors[a].length = 5;
+            actors[a].speed = 3;
+            actors[a].counter = 1;  // counter is the number of pixels to skip
+            actors[a].rate = 1.0; // update rate
+        }
     }
 }
 
 void scene_11_update() {
-	// Randomize the spiral colors
-	for (int a = 0; a < n_actors; a++) {
-		if (a < 5) {
-			if (random(1000) < 800) {
-				actors[a].color = random_palette_color(actors[a].palette);
-			}
-		}
-	}
+    // Randomize the spiral colors
+    for (int a = 0; a < n_actors; a++) {
+        if (a < 5) {
+            if (random(1000) < 800) {
+                actors[a].color = random_palette_color(actors[a].palette);
+            }
+        }
+    }
 }
 
 void scene_12_init() {
-	// White rain (palette 4) / pink/cyan rain (palette 2)
+    // White rain (palette 4) / pink/cyan rain (palette 2)
     n_actors = 11;
     background = fade;
     background_fade_rate = 0.05;
     for (int a = 0; a < n_actors; a++) {
-		actors[a].palette = palette_2;
-		// actors[a].palette = palette_4;
-		if (a >= 11) {
-			actors[a].kind = sparkle;
-		} else {
-			int b = n_actors - a;
-			actors[a].kind = spiral;
-			actors[a].length = random(5) + 1;
-			actors[a].speed = -1;
-			if (random(1000) < 900) {
-				actors[a].counter = 5;  // counter is the number of pixels to skip, 5 means vertical
-				actors[a].rate = 1.0 / (b + 1.0); // update rate
-			} else {
-				actors[a].counter = 1;
-				actors[a].rate = 1.0; // update rate
-			}
-		}
+        actors[a].palette = palette_2;
+        // actors[a].palette = palette_4;
+        if (a >= 11) {
+            actors[a].kind = sparkle;
+        } else {
+            int b = n_actors - a;
+            actors[a].kind = spiral;
+            actors[a].length = random(5) + 1;
+            actors[a].speed = -1;
+            if (random(1000) < 900) {
+                actors[a].counter = 5;  // counter is the number of pixels to skip, 5 means vertical
+                actors[a].rate = 1.0 / (b + 1.0); // update rate
+            } else {
+                actors[a].counter = 1;
+                actors[a].rate = 1.0; // update rate
+            }
+        }
     }
 }
 
 void scene_12_update() {
-	for (int a = 0; a < n_actors; a++) {
-		if (random(1000) < 50) {
-			actors[a].color = random_palette_color(actors[a].palette);
-			actors[a].length = min(6, max(1, actors[a].length + (random(3) - 1)));
-			actors[a].rate = random(500) / 1000.0;
-		}
-	}
+    for (int a = 0; a < n_actors; a++) {
+        if (random(1000) < 50) {
+            actors[a].color = random_palette_color(actors[a].palette);
+            actors[a].length = min(6, max(1, actors[a].length + (random(3) - 1)));
+            actors[a].rate = random(500) / 1000.0;
+        }
+    }
 }
 
 
@@ -495,19 +495,19 @@ void spiral_init(actor& a) {
 }
 
 void spiral_update(actor& a) {
-	if (a.rate == 1.0 || random(1000) < 1000 * a.rate) {
-		a.pos = (a.pos + a.speed * a.counter) % N_LEDS;
-	}
+    if (a.rate == 1.0 || random(1000) < 1000 * a.rate) {
+        a.pos = (a.pos + a.speed * a.counter) % N_LEDS;
+    }
 }
 
 void spiral_render(actor& a) {
     uint32_t c = a.color;
     for (int i = 0; i < a.length; i++) {
-		if (i == 0) {
-			strip.setPixelColor((a.pos + i * a.counter) % N_LEDS, dimColor(c, 0.1));
-		} else {
-			strip.setPixelColor((a.pos + i * a.counter) % N_LEDS, c);
-		}
+        if (i == 0) {
+            strip.setPixelColor((a.pos + i * a.counter) % N_LEDS, dimColor(c, 0.1));
+        } else {
+            strip.setPixelColor((a.pos + i * a.counter) % N_LEDS, c);
+        }
         c = dimColor(c, 1.0 - 1.0 / a.length);
     }
 }
@@ -668,11 +668,11 @@ void unpackColor(uint32_t c, byte* r, byte* g, byte* b) {
 
 
 uint32_t dimColor(uint32_t c, float fraction) {
-  byte  r, g, b;
-  g = ((c >> 16) & 0x7f) * fraction;
-  r = ((c >>  8) & 0x7f) * fraction;
-  b =  (c        & 0x7f) * fraction;
-  return strip.Color(r, g, b);
+    byte  r, g, b;
+    g = ((c >> 16) & 0x7f) * fraction;
+    r = ((c >>  8) & 0x7f) * fraction;
+    b =  (c        & 0x7f) * fraction;
+    return strip.Color(r, g, b);
 }
 
 uint32_t dimColorRandomBase(uint32_t c, int base) {
