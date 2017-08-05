@@ -6,7 +6,7 @@ Staff with LED strip
 
 1) Follow these instructions to set up your Arduino IDE: https://learn.adafruit.com/adafruit-arduino-ide-setup/arduino-1-dot-6-x-ide
 
-2) Download the LPD8806 package from https://github.com/adafruit/LPD8806 and then add it as a zip library using like https://www.arduino.cc/en/Guide/Libraries#toc4
+2) Download the LPD8806 package from https://github.com/adafruit/LPD8806 and then add it as a zip library using  https://www.arduino.cc/en/Guide/Libraries#toc4
 
 3) Make sure to add https://adafruit.github.io/arduino-board-index/package_adafruit_index.json Additional Boards Manager
 
