@@ -86,6 +86,9 @@ uint32_t background_color = strip.Color(0, 0, 0);
 float background_fade_rate = 0.1;
 enum background background = clear;
 
+// Used for demo timing
+uint32_t step = 0;
+
 
 void setup() {
     // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -121,13 +124,69 @@ void loop() {
 }
 
 void scene_init() {
-    scene_12_init();
+    // Set up the actors we requested
+    actors_init();
 }
 
 void scene_update() {
-    scene_12_update();
+    int scenes = 8;
+    int steps_per_scene = 200;
+    int current_scene = (step / steps_per_scene) % scenes + 8;
+
+    if (step % steps_per_scene == 0) {
+        switch (current_scene) {
+            /*
+             *case 1: scene_1_init(); break;
+             *case 2: scene_2_init(); break;
+             *case 3: scene_3_init(); break;
+             *case 4: scene_4_init(); break;
+             *case 5: scene_5_init(); break;
+             *case 6: scene_6_init(); break;
+             *case 7: scene_7_init(); break;
+             */
+            case 8: scene_8_init(); break;
+            case 9: scene_9_init(); break;
+            case 10: scene_10_init(); break;
+            case 11: scene_11_init(); break;
+            case 12: scene_12_init(); break;
+            case 14: scene_13_init(); break;
+        }
+        actors_init();
+    }
+
+    switch (current_scene) {
+        // NOTE: scenes prior to 8 didn't have updates
+        case 8: scene_8_update(); break;
+        case 9: scene_9_update(); break;
+        case 10: scene_10_update(); break;
+        case 11: scene_11_update(); break;
+        // These are my favorite so run them for longer
+        case 12: 
+        case 13:
+            scene_12_update();
+            break;
+        case 14:
+        case 15: 
+            scene_13_update();
+            break;
+    }
+    
+    step++;
 }
 
+
+// NOTE: use this to lock a particular scene
+/*
+ *void scene_init() {
+ *    scene_13_init();
+ *
+ *}
+ *
+ *void scene_update() {
+ *    scene_13_update();
+ *}
+ *
+ */
 void scene_1_init() {
     // Sparklers 
     n_actors = 20;
@@ -360,20 +419,19 @@ void scene_11_update() {
     }
 }
 
-void scene_12_init() {
+void scene_rain_init(enum palette palette) {
     // White rain (palette 4) / pink/cyan rain (palette 2)
-    n_actors = 11;
+    n_actors = 12;
     background = fade;
     background_fade_rate = 0.05;
     for (int a = 0; a < n_actors; a++) {
-        actors[a].palette = palette_2;
-        // actors[a].palette = palette_4;
-        if (a >= 11) {
+        actors[a].palette = palette;
+        if (a >= 12) {
             actors[a].kind = sparkle;
         } else {
             int b = n_actors - a;
             actors[a].kind = spiral;
-            actors[a].length = random(5) + 1;
+            actors[a].length = random(4) + 1;
             actors[a].speed = -1;
             if (random(1000) < 900) {
                 actors[a].counter = 5;  // counter is the number of pixels to skip, 5 means vertical
@@ -386,16 +444,31 @@ void scene_12_init() {
     }
 }
 
-void scene_12_update() {
+void scene_rain_update() {
     for (int a = 0; a < n_actors; a++) {
         if (random(1000) < 50) {
             actors[a].color = random_palette_color(actors[a].palette);
-            actors[a].length = min(6, max(1, actors[a].length + (random(3) - 1)));
+            actors[a].length = min(5, max(1, actors[a].length + (random(3) - 1)));
             actors[a].rate = random(500) / 1000.0;
         }
     }
 }
 
+void scene_12_init() {
+    scene_rain_init(palette_2);
+}
+
+void scene_12_update() {
+    scene_rain_update();
+}
+
+void scene_13_init() {
+    scene_rain_init(palette_4);
+}
+
+void scene_13_update() {
+    scene_rain_update();
+}
 
 void actors_init() {
     for (int a = 0; a < n_actors; a++) {
