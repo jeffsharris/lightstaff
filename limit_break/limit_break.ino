@@ -1,5 +1,9 @@
 #include "LPD8806.h"
 #include "SPI.h"
+#include <EEPROM.h>
+#include <elapsedMillis.h>
+
+
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
@@ -17,6 +21,15 @@ int clockPin = 15;
 
 #define N_LEDS       160
 
+#define MODEADDRESS 500 // Byte address in EEPROM to use for the mode counter (0-1023).u
+#define SWITCHADDRESS 501 // Byte address in EEPROM to use for the mode switch flag (0-1023).
+#define MODE_SWITCH_TIME 2000 // Number of milliseconds before power cycle doesn't change modes
+
+elapsedMillis timer;
+elapsedMillis step_timer;
+
+#define SWITCH_MODES 1
+#define DONT_SWITCH_MODES 0
 
 // Set the first variable to the NUMBER of pixels.
 // The LED strips are 32 LEDs per meter but you can extend/cut the strip
@@ -86,8 +99,9 @@ uint32_t background_color = strip.Color(0, 0, 0);
 float background_fade_rate = 0.1;
 enum background background = clear;
 
-// Used for demo timing
-uint32_t step = 0;
+#define NUMBEROFMODES 6
+
+uint8_t modevalue = 0;
 
 
 void setup() {
@@ -96,6 +110,21 @@ void setup() {
     if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
 #endif
     // End of trinket special code
+
+
+    boolean modeSwitch = EEPROM.read(SWITCHADDRESS); // read mode switch from EEPROM to decide whether to switch modes
+
+    EEPROM.write(SWITCHADDRESS, SWITCH_MODES); // write to EEPROM so that we will switch modes next time (if power is interrupted before we change this)
+    timer = 0; // when this counter reaches MODE_SWITCH_TIME, we will change the mode switch so that we don't switch modes
+
+    modevalue = EEPROM.read(MODEADDRESS); // read mode counter from EEPROM (non-volatile memory)
+
+    if (modevalue >= NUMBEROFMODES) modevalue = NUMBEROFMODES; // fix out-of-range mode counter (happens when the program is run for the first time)
+    if (modeSwitch == SWITCH_MODES) {
+      if (++modevalue >= NUMBEROFMODES) modevalue = 0; // increment the mode counter
+      EEPROM.write(MODEADDRESS, modevalue);
+    }
+
 
     // Setup the scene (our config)
     scene_init();
@@ -124,54 +153,35 @@ void loop() {
 }
 
 void scene_init() {
-    // Set up the actors we requested
-    actors_init();
+    switch (modevalue) {
+      /*
+       *case 1: scene_1_init(); break;
+       *case 2: scene_2_init(); break;
+       *case 3: scene_3_init(); break;
+       *case 4: scene_4_init(); break;
+       *case 5: scene_5_init(); break;
+       *case 6: scene_6_init(); break;
+       *case 7: scene_7_init(); break;
+       */
+      case 0: scene_8_init(); break;
+      case 1: scene_9_init(); break;
+      case 2: scene_10_init(); break;
+      case 3: scene_11_init(); break;
+      case 4: scene_12_init(); break;
+      case 5: scene_13_init(); break;
+    }
 }
 
 void scene_update() {
-    int scenes = 8;
-    int steps_per_scene = 200;
-    int current_scene = (step / steps_per_scene) % scenes + 8;
-
-    if (step % steps_per_scene == 0) {
-        switch (current_scene) {
-            /*
-             *case 1: scene_1_init(); break;
-             *case 2: scene_2_init(); break;
-             *case 3: scene_3_init(); break;
-             *case 4: scene_4_init(); break;
-             *case 5: scene_5_init(); break;
-             *case 6: scene_6_init(); break;
-             *case 7: scene_7_init(); break;
-             */
-            case 8: scene_8_init(); break;
-            case 9: scene_9_init(); break;
-            case 10: scene_10_init(); break;
-            case 11: scene_11_init(); break;
-            case 12: scene_12_init(); break;
-            case 14: scene_13_init(); break;
-        }
-        actors_init();
-    }
-
-    switch (current_scene) {
+    switch (modevalue) {
         // NOTE: scenes prior to 8 didn't have updates
-        case 8: scene_8_update(); break;
-        case 9: scene_9_update(); break;
-        case 10: scene_10_update(); break;
-        case 11: scene_11_update(); break;
-        // These are my favorite so run them for longer
-        case 12: 
-        case 13:
-            scene_12_update();
-            break;
-        case 14:
-        case 15: 
-            scene_13_update();
-            break;
+        case 0: scene_8_update(); break;
+        case 1: scene_9_update(); break;
+        case 2: scene_10_update(); break;
+        case 3: scene_11_update(); break;
+        case 4: scene_12_update(); break;
+        case 5: scene_13_update(); break;
     }
-    
-    step++;
 }
 
 
