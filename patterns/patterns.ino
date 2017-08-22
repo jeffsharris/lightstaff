@@ -38,7 +38,8 @@ LPD8806 strip = LPD8806(N_LEDS, dataPin, clockPin);
 // Configs below are mainly intended to be used in indirect rendering mode
 
 // Actor kinds
-enum kind {sparkle, slow_sparkle, spiral, glimmer, shimmer, bee, sparkler, lavalamp};
+// enum kind {sparkle, slow_sparkle, spiral, glimmer, shimmer, bee, sparkler, lavalamp};
+enum kind {sparkle, slow_sparkle, spiral, glimmer, shimmer, bee, sparkler};
 enum palette {full_rgb, white, palette_1, palette_2, palette_3, palette_4, palette_5};
 enum background {keep, clear, fade, shimmer_fade, double_buffer};
 
@@ -112,11 +113,13 @@ uint32_t palette_5_colors[] = {
 uint32_t* colors = palette_5_colors;
 
 // Allocate two pixel buffers (for double buffering)
-uint32_t buf_1 [N_LEDS];
-uint32_t buf_2 [N_LEDS];
-
-uint32_t *state = buf_1;
-uint32_t *next_state = buf_2;
+/*
+ *uint32_t buf_1 [N_LEDS];
+ *uint32_t buf_2 [N_LEDS];
+ *
+ *uint32_t *state = buf_1;
+ *uint32_t *next_state = buf_2;
+ */
 
 uint32_t background_color = strip.Color(0, 0, 0);
 float background_fade_rate = 0.1;
@@ -215,7 +218,7 @@ void scene_init() {
       case 3: scene_11_init(); break;
       case 4: scene_12_init(); break;
       case 5: scene_13_init(); break;
-      case 6: scene_14_init(); break;
+      // case 6: scene_14_init(); break;
     }
 }
 
@@ -228,7 +231,7 @@ void scene_update() {
         case 3: scene_11_update(); break;
         case 4: scene_12_update(); break;
         case 5: scene_13_update(); break;
-        case 6: scene_14_update(); break;
+        // case 6: scene_14_update(); break;
     }
 }
 
@@ -404,13 +407,13 @@ void scene_10_init() {
     for (int a = 0; a < n_actors; a++) {
         if (a >= 10) {
             actors[a].kind = sparkle;
-            actors[a].palette = palette_3;
+            actors[a].palette = palette_4;
         } else if (a >= 5) {
             actors[a].kind = sparkle;
             actors[a].palette = white;
         } else {
             actors[a].kind = spiral;
-            actors[a].palette = palette_3;
+            actors[a].palette = palette_4;
             actors[a].length = 5;
             actors[a].speed = 3;
             actors[a].counter = 1;  // counter is the number of pixels to skip
@@ -439,13 +442,13 @@ void scene_11_init() {
     for (int a = 0; a < n_actors; a++) {
         if (a >= 15) {
             actors[a].kind = sparkle;
-            actors[a].palette = palette_3;
+            actors[a].palette = palette_4;
         } else if (a >= 10) {
             actors[a].kind = sparkle;
             actors[a].palette = white;
         } else {
             actors[a].kind = spiral;
-            actors[a].palette = palette_3;
+            actors[a].palette = palette_4;
             actors[a].length = 5;
             actors[a].speed = 3;
             actors[a].counter = 1;  // counter is the number of pixels to skip
@@ -516,17 +519,19 @@ void scene_13_update() {
     scene_rain_update();
 }
 
-void scene_14_init() {
-    n_actors = 1;
-    background = double_buffer;
-    for (int a = 0; a < n_actors; a++) {
-        actors[a].palette = palette_2;
-        actors[a].kind = lavalamp;
-    }
-}
-
-void scene_14_update() {
-}
+/*
+ *void scene_14_init() {
+ *    n_actors = 1;
+ *    background = double_buffer;
+ *    for (int a = 0; a < n_actors; a++) {
+ *        actors[a].palette = palette_2;
+ *        actors[a].kind = lavalamp;
+ *    }
+ *}
+ *
+ *void scene_14_update() {
+ *}
+ */
 
 void actors_init() {
     for (int a = 0; a < n_actors; a++) {
@@ -538,7 +543,7 @@ void actors_init() {
             case       shimmer: shimmer_init(actors[a]);       break;
             case           bee: bee_init(actors[a]);           break;
             case      sparkler: sparkler_init(actors[a]);      break;
-            case      lavalamp: lavalamp_init(actors[a]);      break;
+            // case      lavalamp: lavalamp_init(actors[a]);      break;
         }
     }
 }
@@ -553,7 +558,7 @@ void actors_update() {
             case       shimmer: shimmer_update(actors[a]);       break;
             case           bee: bee_update(actors[a]);           break;
             case      sparkler: sparkler_update(actors[a]);      break;
-            case      lavalamp: lavalamp_update(actors[a]);      break;
+            // case      lavalamp: lavalamp_update(actors[a]);      break;
         }
     }
 }
@@ -575,13 +580,15 @@ void actors_render() {
             strip.setPixelColor(i, dimColor(strip.getPixelColor(i), 1.0 - background_fade_rate * random(1000) / 1000.0));
         }
     } else if (background == double_buffer) {
-        for (int i = 0; i < N_LEDS; i++) {
-            strip.setPixelColor(i, combineColor(state[i], next_state[i], 0.5));
-        }
-
-        uint32_t *tmp = state;
-        state = next_state;
-        next_state = tmp;
+/*
+ *        for (int i = 0; i < N_LEDS; i++) {
+ *            strip.setPixelColor(i, combineColor(state[i], next_state[i], 0.5));
+ *        }
+ *
+ *        uint32_t *tmp = state;
+ *        state = next_state;
+ *        next_state = tmp;
+ */
     }
 
     // Render the actors
@@ -594,7 +601,7 @@ void actors_render() {
             case       shimmer: shimmer_render(actors[a]);       break;
             case           bee: bee_render(actors[a]);           break;
             case      sparkler: sparkler_render(actors[a]);      break;
-            case      lavalamp: lavalamp_render(actors[a]);      break;
+            // case      lavalamp: lavalamp_render(actors[a]);      break;
         }
     }
 }
@@ -780,39 +787,41 @@ void sparkler_render(actor& a) {
 }
 
 
-void lavalamp_init(actor& a) {
-    for (int i = 0; i < N_LEDS; i++) {
-        // On or off
-        if (random(1000) < 50) {
-            state[i] = random_palette_color(a.palette);
-        }
-    }
-}
-
-void lavalamp_update(actor& a) {
-    // TODO: configurable
-    for (int u = 0; u < 50; u++) {
-        int i = random(N_LEDS);
-        
-        uint32_t avg_color = combineColor(
-            combineColor(state[(i-2) % N_LEDS], state[(i-3) % N_LEDS], 0.5),
-            combineColor(state[(i+2) % N_LEDS], state[(i+3) % N_LEDS], 0.5),
-            0.5
-        );
-        // TODO: configurable
-        next_state[i] = dimColor(avg_color, 0.99);
-
-        // Randomize births
-        // TODO: configurable
-        if (random(1000) < 10) {
-            next_state[i] = random_rgb_color();
-        }
-    }
-}
-
-void lavalamp_render(actor& a) {
-    // Handled by double_buffer
-}
+/*
+ *void lavalamp_init(actor& a) {
+ *    for (int i = 0; i < N_LEDS; i++) {
+ *        // On or off
+ *        if (random(1000) < 50) {
+ *            state[i] = random_palette_color(a.palette);
+ *        }
+ *    }
+ *}
+ *
+ *void lavalamp_update(actor& a) {
+ *    // TODO: configurable
+ *    for (int u = 0; u < 50; u++) {
+ *        int i = random(N_LEDS);
+ *        
+ *        uint32_t avg_color = combineColor(
+ *            combineColor(state[(i-2) % N_LEDS], state[(i-3) % N_LEDS], 0.5),
+ *            combineColor(state[(i+2) % N_LEDS], state[(i+3) % N_LEDS], 0.5),
+ *            0.5
+ *        );
+ *        // TODO: configurable
+ *        next_state[i] = dimColor(avg_color, 0.99);
+ *
+ *        // Randomize births
+ *        // TODO: configurable
+ *        if (random(1000) < 10) {
+ *            next_state[i] = random_rgb_color();
+ *        }
+ *    }
+ *}
+ *
+ *void lavalamp_render(actor& a) {
+ *    // Handled by double_buffer
+ *}
+ */
 
 ///////////////////////////////////////////////////////////////////////////////
 // Direct mode rendered patterns                  
