@@ -875,25 +875,18 @@ void dither(uint8_t wait) {
 void candyCane(uint32_t c1, uint32_t c2, uint8_t len, uint8_t space, uint8_t wait) {
     uint32_t pixelColor;
 
-    for (int i = 0; i < N_LEDS; i++) {
-        int location = 0;
-        while (location < N_LEDS) {
-            for (int j = 0; j < len; j++, location++) {
-                if (i < location) {
-                    continue;
-                }
+    for (uint8_t i = 0; i < N_LEDS; i++) {
+        for (uint8_t location = 0; location < N_LEDS; location++) {
+            if (location % (len + space) < len) {
                 strip.setPixelColor((i + location) % N_LEDS, c1);
-            }
-            for (int j = 0; j < space; j++, location++) {
-                if (i < location) {
-                    continue;
-                }
+            } else {
                 strip.setPixelColor((i + location) % N_LEDS, c2);
             }
-        }
+
+        } 
         strip.show();
         delay(wait);
-    } 
+    }
 }
 
 // Lights merge together either from top and bottom or apart from middle
