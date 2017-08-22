@@ -154,15 +154,6 @@ void loop() {
 
 void scene_init() {
     switch (modevalue) {
-      /*
-       *case 1: scene_1_init(); break;
-       *case 2: scene_2_init(); break;
-       *case 3: scene_3_init(); break;
-       *case 4: scene_4_init(); break;
-       *case 5: scene_5_init(); break;
-       *case 6: scene_6_init(); break;
-       *case 7: scene_7_init(); break;
-       */
       case 0: scene_8_init(); break;
       case 1: scene_9_init(); break;
       case 2: scene_10_init(); break;
@@ -185,18 +176,6 @@ void scene_update() {
 }
 
 
-// NOTE: use this to lock a particular scene
-/*
- *void scene_init() {
- *    scene_13_init();
- *
- *}
- *
- *void scene_update() {
- *    scene_13_update();
- *}
- *
- */
 void scene_1_init() {
     // Sparklers 
     n_actors = 20;
