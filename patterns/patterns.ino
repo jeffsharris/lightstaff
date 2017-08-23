@@ -130,6 +130,28 @@ enum background background = clear;
 uint8_t modevalue = 0;
 
 
+// Gamma correction; basically this widens the range of "dark" colors.
+// Otherwise stuff will look really white / washed out compared to normal RGB.
+const uint8_t PROGMEM gamma[] = { // gamma correction table
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+  2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5,
+  5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10,
+  10, 10, 11, 11, 11, 12, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16,
+  17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 24, 24, 25,
+  25, 26, 27, 27, 28, 29, 29, 30, 31, 32, 32, 33, 34, 35, 35, 36,
+  37, 38, 39, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 50,
+  51, 52, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68,
+  69, 70, 72, 73, 74, 75, 77, 78, 79, 81, 82, 83, 85, 86, 87, 89,
+  90, 92, 93, 95, 96, 98, 99, 101, 102, 104, 105, 107, 109, 110, 112, 114,
+  115, 117, 119, 120, 122, 124, 126, 127, 129, 131, 133, 135, 137, 138, 140, 142,
+  144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 167, 169, 171, 173, 175,
+  177, 180, 182, 184, 186, 189, 191, 193, 196, 198, 200, 203, 205, 208, 210, 213,
+  215, 218, 220, 223, 225, 228, 231, 233, 236, 239, 241, 244, 247, 249, 252, 255
+};
+
+
 void setup() {
     // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
 #if defined (__AVR_ATtiny85__)
@@ -365,9 +387,9 @@ void scene_9_init() {
     // Very princess-y
     n_actors = 30;
     background = shimmer_fade;
-    background_fade_rate = 0.3;
+    background_fade_rate = 0.1;
     for (int a = 0; a < n_actors; a++) {
-        if (a >= 5) {
+        if (a >= 10) {
             actors[a].kind = bee;
             actors[a].palette = white;
             actors[a].speed = 40; // Update speed / 50 frames
@@ -470,12 +492,12 @@ void scene_11_update() {
 
 void scene_rain_init(enum palette palette) {
     // White rain (palette 4) / pink/cyan rain (palette 2)
-    n_actors = 12;
-    background = fade;
+    n_actors = 15;
+    background = shimmer_fade;
     background_fade_rate = 0.05;
     for (int a = 0; a < n_actors; a++) {
         actors[a].palette = palette;
-        if (a >= 12) {
+        if (a >= 15) {
             actors[a].kind = sparkle;
         } else {
             int b = n_actors - a;
@@ -567,22 +589,22 @@ void actors_render() {
     // Black out the array
     if (background == clear) {
         for (int i = 0; i < N_LEDS; i++) {
-            strip.setPixelColor(i, background_color);
+            setPixelColor(i, background_color);
         }
     } else if (background == fade) {
         for (int i = 0; i < N_LEDS; i++) {
             // TODO: fade to background color, not black
-            strip.setPixelColor(i, dimColor(strip.getPixelColor(i), 1.0 - background_fade_rate));
+            setPixelColor(i, dimColor(strip.getPixelColor(i), 1.0 - background_fade_rate));
         }
     } else if (background == shimmer_fade) {
         for (int i = 0; i < N_LEDS; i++) {
             // TODO: fade to background color, not black
-            strip.setPixelColor(i, dimColor(strip.getPixelColor(i), 1.0 - background_fade_rate * random(1000) / 1000.0));
+            setPixelColor(i, dimColor(strip.getPixelColor(i), 1.0 - background_fade_rate * random(1000) / 1000.0));
         }
     } else if (background == double_buffer) {
 /*
  *        for (int i = 0; i < N_LEDS; i++) {
- *            strip.setPixelColor(i, combineColor(state[i], next_state[i], 0.5));
+ *            setPixelColor(i, combineColor(state[i], next_state[i], 0.5));
  *        }
  *
  *        uint32_t *tmp = state;
@@ -615,7 +637,7 @@ void sparkle_update(actor& a) {
 }
 
 void sparkle_render(actor& a) {
-    strip.setPixelColor(random() % N_LEDS, random_palette_color(a.palette));
+    setPixelColor(random() % N_LEDS, random_palette_color(a.palette));
 }
 
 void slow_sparkle_init(actor& a) {
@@ -635,7 +657,7 @@ void slow_sparkle_update(actor& a) {
 }
 
 void slow_sparkle_render(actor& a) {
-    strip.setPixelColor(a.pos, a.color);
+    setPixelColor(a.pos, a.color);
 }
 
 void spiral_init(actor& a) {
@@ -653,9 +675,9 @@ void spiral_render(actor& a) {
     uint32_t c = a.color;
     for (int i = 0; i < a.length; i++) {
         if (i == 0) {
-            strip.setPixelColor((a.pos + i * a.counter) % N_LEDS, dimColor(c, 0.1));
+            setPixelColor((a.pos + i * a.counter) % N_LEDS, dimColor(c, 0.1));
         } else {
-            strip.setPixelColor((a.pos + i * a.counter) % N_LEDS, c);
+            setPixelColor((a.pos + i * a.counter) % N_LEDS, c);
         }
         c = dimColor(c, 1.0 - 1.0 / a.length);
     }
@@ -670,7 +692,7 @@ void glimmer_update(actor& a) {
 void glimmer_render(actor& a) {
     for (int i = 0; i < N_LEDS; i++) {
         uint32_t c = strip.getPixelColor(i);
-        strip.setPixelColor(i, dimColor(c, random(900) / 1000.0));
+        setPixelColor(i, dimColor(c, random(900) / 1000.0));
     }
 
 }
@@ -684,7 +706,7 @@ void shimmer_update(actor& a) {
 void shimmer_render(actor& a) {
     for (int i = 0; i < N_LEDS; i++) {
         uint32_t c = strip.getPixelColor(i);
-        strip.setPixelColor(i, dimColor(c, 0.5 * random(1000) / 1000.0) + 0.5);
+        setPixelColor(i, dimColor(c, 0.5 * random(1000) / 1000.0) + 0.5);
     }
 }
 
@@ -711,8 +733,8 @@ void bee_update(actor& a) {
 }
 
 void bee_render(actor& a) {
-    // strip.setPixelColor(a.pos, a.color);
-    strip.setPixelColor(a.pos, dimColorRandomBase(a.color, 750)); 
+    // setPixelColor(a.pos, a.color);
+    setPixelColor(a.pos, dimColorRandomBase(a.color, 750)); 
 }
 
 void sparkler_init(actor& a) {
@@ -727,7 +749,7 @@ void sparkler_update(actor& a) {
 }
 
 void sparkler_render(actor& a) {
-    strip.setPixelColor(a.pos, dimColorRandomBase(a.color, 750)); 
+    setPixelColor(a.pos, dimColorRandomBase(a.color, 750)); 
 
     // Pole geometry: in order to look like something is centered around a
     // point on the pole, you need to wrap. Points that look nearby are:
@@ -746,28 +768,28 @@ void sparkler_render(actor& a) {
                 case  10: 
                     if (random(10) == 0) {
                         c = dimColorRandomBase(dimColor(a.color, 1/10.), 0);
-                        strip.setPixelColor((a.pos + i) % N_LEDS, c);
+                        setPixelColor((a.pos + i) % N_LEDS, c);
                     }
                     break;
                 case -8: 
                 case  8: 
                     if (random(8) == 0) {
                         c = dimColorRandomBase(dimColor(a.color, 1/8.), 100);
-                        strip.setPixelColor((a.pos + i) % N_LEDS, c);
+                        setPixelColor((a.pos + i) % N_LEDS, c);
                     }
                     break;
                 case -7: 
                 case  7: 
                     if (random(7) == 0) {
                         c = dimColorRandomBase(dimColor(a.color, 1/7.), 200);
-                        strip.setPixelColor((a.pos + i) % N_LEDS, c);
+                        setPixelColor((a.pos + i) % N_LEDS, c);
                     }
                     break;
                 case -5: 
                 case  5: 
                     if (random(5) == 0) {
                         c = dimColorRandomBase(dimColor(a.color, 1/5.), 400);
-                        strip.setPixelColor((a.pos + i) % N_LEDS, c);
+                        setPixelColor((a.pos + i) % N_LEDS, c);
                     }
                     break;
                 case -3: 
@@ -776,7 +798,7 @@ void sparkler_render(actor& a) {
                 case  2: 
                     if (random(2) == 0) {
                         c = dimColorRandomBase(a.color, 600);
-                        strip.setPixelColor((a.pos + i) % N_LEDS, c);
+                        setPixelColor((a.pos + i) % N_LEDS, c);
                     }
                     break;
             }
@@ -834,7 +856,7 @@ void rainbowCycleWave(uint8_t wait) {
             // wheel (thats the i / strip.numPixels() part)
             // Then add in j which makes the colors go around per pixel
             // the % 384 is to make the wheel cycle around
-            strip.setPixelColor(i, Wheel(((i * 384 / N_LEDS) + j) % 384));
+            setPixelColor(i, Wheel(((i * 384 / N_LEDS) + j) % 384));
         }
         strip.show();   // write all the pixels out
         delay(wait);
@@ -864,7 +886,7 @@ void dither(uint8_t wait) {
             reverse <<= 1;
             if(i & bit) reverse |= 1;
         }
-        strip.setPixelColor(reverse, rainbowColors[reverse]);
+        setPixelColor(reverse, rainbowColors[reverse]);
         strip.show();
         delay(wait);
     }
@@ -878,9 +900,9 @@ void candyCane(uint32_t c1, uint32_t c2, uint8_t len, uint8_t space, uint8_t wai
     for (uint8_t i = 0; i < N_LEDS; i++) {
         for (uint8_t location = 0; location < N_LEDS; location++) {
             if (location % (len + space) < len) {
-                strip.setPixelColor((i + location) % N_LEDS, c1);
+                setPixelColor((i + location) % N_LEDS, c1);
             } else {
-                strip.setPixelColor((i + location) % N_LEDS, c2);
+                setPixelColor((i + location) % N_LEDS, c2);
             }
 
         } 
@@ -896,11 +918,11 @@ void merge(uint32_t c1, boolean fromEdges, uint8_t wait) {
         for (int k = 0; k <= i; k++) {
             uint32_t dimmedColor = dimColor(c1, (1.0 + k) / (1.0 + i));
             if (fromEdges) {
-                strip.setPixelColor(k, dimmedColor);
-                strip.setPixelColor(N_LEDS - 1 - k, dimmedColor);
+                setPixelColor(k, dimmedColor);
+                setPixelColor(N_LEDS - 1 - k, dimmedColor);
             } else {
-                strip.setPixelColor(N_LEDS / 2 - 1 - k, dimmedColor);
-                strip.setPixelColor(N_LEDS / 2 + k, dimmedColor);
+                setPixelColor(N_LEDS / 2 - 1 - k, dimmedColor);
+                setPixelColor(N_LEDS / 2 + k, dimmedColor);
             }
         }
         strip.show();
@@ -915,9 +937,7 @@ void wave(uint32_t c, int cycles, uint8_t wait) {
     byte  r, g, b, r2, g2, b2;
 
     // Need to decompose color into its r, g, b elements
-    g = (c >> 16) & 0x7f;
-    r = (c >>  8) & 0x7f;
-    b =  c        & 0x7f; 
+    unpackColor(c, &r, &g, &b);
 
     for(int x=0; x<(strip.numPixels()*5); x++)
     {
@@ -936,7 +956,7 @@ void wave(uint32_t c, int cycles, uint8_t wait) {
                 g2 = (byte)((float)g * y);
                 b2 = (byte)((float)b * y);
             }
-            strip.setPixelColor(i, r2, g2, b2);
+            setPixelColor(i, r2, g2, b2);
         }
         strip.show();
         delay(wait);
@@ -946,29 +966,29 @@ void wave(uint32_t c, int cycles, uint8_t wait) {
 // Create a stack of colors in either up or down direction
 void stack(uint32_t c1, uint32_t c2, boolean downDirection, uint8_t wait) {
     for (int i = 0; i < strip.numPixels(); i++) {
-        strip.setPixelColor(i, c2);
+        setPixelColor(i, c2);
     }
     if (downDirection) {
-        strip.setPixelColor(0, c1); // Set the first row to the color
+        setPixelColor(0, c1); // Set the first row to the color
         strip.show();
         delay(wait);
         for (int max = N_LEDS; max > 0; max--) {
             for (int i = 1; i < max; i++) { // Move the colored row down
-                strip.setPixelColor(i, c1); // Move the row down
-                strip.setPixelColor(i-1, c2); // Clear the previous row
+                setPixelColor(i, c1); // Move the row down
+                setPixelColor(i-1, c2); // Clear the previous row
             }
             strip.show();
             delay(wait);
         }
     } else {
-        strip.setPixelColor(N_LEDS-1, c1); // Set the last row to the color
+        setPixelColor(N_LEDS-1, c1); // Set the last row to the color
         strip.show();
         delay(wait);
         for (int min = 0; min < N_LEDS; min++) {
 
             for (int i = N_LEDS - 2; i >= min; i--) { // Move the colored row up
-                strip.setPixelColor(i, c1); // Move the row down
-                strip.setPixelColor(i+1, c2); // Clear the previous row
+                setPixelColor(i, c1); // Move the row down
+                setPixelColor(i+1, c2); // Clear the previous row
             }
             strip.show();
             delay(wait);
@@ -1002,7 +1022,7 @@ uint32_t Wheel(uint16_t WheelPos)
             g = 0;                    // green off
             break;
     }
-    return(strip.Color(r,g,b));
+    return(strip.Color(r, g, b));
 }
 
 // Random full-spectrum RGB color
@@ -1024,6 +1044,7 @@ uint32_t random_palette_color(palette p) {
         case palette_2: return palette_2_colors[random() % N_PALETTE_2_COLORS];
         case palette_3: return palette_3_colors[random() % N_PALETTE_3_COLORS];
         case palette_4: return palette_4_colors[random() % N_PALETTE_4_COLORS];
+        case palette_5: return palette_5_colors[random() % N_PALETTE_5_COLORS];
     }
 }
 
@@ -1036,9 +1057,7 @@ void unpackColor(uint32_t c, byte* r, byte* g, byte* b) {
 
 uint32_t dimColor(uint32_t c, float fraction) {
     byte  r, g, b;
-    g = ((c >> 16) & 0x7f) * fraction;
-    r = ((c >>  8) & 0x7f) * fraction;
-    b =  (c        & 0x7f) * fraction;
+    unpackColor(c, &r, &g, &b);
     return strip.Color(r, g, b);
 }
 
@@ -1048,13 +1067,40 @@ uint32_t dimColorRandomBase(uint32_t c, int base) {
 
 uint32_t combineColor(uint32_t c1, uint32_t c2, float rate) {
     byte  r1, g1, b1;
-    g1 = ((c1 >> 16) & 0x7f) * rate;
-    r1 = ((c1 >>  8) & 0x7f) * rate;
-    b1 =  (c1        & 0x7f) * rate;
+    unpackColor(c1, &r1, &g1, &b1);
+
+    r1 = r1 * rate;
+    g1 = g1 * rate;
+    b1 = b1 * rate;
 
     byte  r2, g2, b2;
-    g2 = ((c2 >> 16) & 0x7f) * (1.0 - rate);
-    r2 = ((c2 >>  8) & 0x7f) * (1.0 - rate);
-    b2 =  (c2        & 0x7f) * (1.0 - rate);
+    unpackColor(c2, &r2, &g2, &b2);
+
+    r2 = r2 * (1.0 - rate);
+    g2 = g2 * (1.0 - rate);
+    b2 = b2 * (1.0 - rate);
+
     return strip.Color(r1 + r2, g1 + g2, b1 + b2);
+}
+
+uint32_t correctColor(byte r, byte g, byte b) {
+  return strip.Color(pgm_read_byte(&gamma[r]),
+                     pgm_read_byte(&gamma[g]),
+                     pgm_read_byte(&gamma[b]));
+}
+
+uint32_t correctColor(uint32_t c) {
+  byte r, g, b;
+  unpackColor(c, &r, &g, &b);
+  return strip.Color(pgm_read_byte(&gamma[r]),
+                     pgm_read_byte(&gamma[g]),
+                     pgm_read_byte(&gamma[b]));
+}
+
+void setPixelColor(int i, uint32_t c) {
+  strip.setPixelColor(i, correctColor(c));
+}
+
+void setPixelColor(int i, byte r, byte g, byte b) {
+  strip.setPixelColor(i, correctColor(r, g, b));
 }
