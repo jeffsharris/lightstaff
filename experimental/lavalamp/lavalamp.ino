@@ -62,10 +62,6 @@ void init_lamp() {
 }
 
 void update_lamp() {
-    // Adapted from hexlife http://davidsiaw.github.io/blog/2014/11/21/hexlife/
-    // Geometry: +2/+3 and -2/-3 makes for a purina sign geometry that is mostly visible
-    // adding in the +/-5 point gets us to a hex geometry
-    // for (int i = 0; i < N_LEDS; i++) {
     for (int u = 0; u < 50; u++) {
         int i = random(N_LEDS);
         
