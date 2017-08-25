@@ -215,19 +215,29 @@ void indirect_mode_loop() {
 }
 
 void direct_mode_loop() {
-    for (int i = 1; i < N_COLORS; i++) {
-        candyCane(colors[i], colors[(i - 1) % N_COLORS], 3, 7, 100);
-    }
+
+    dither(5);
+    rainbowCycleWave(0);
+    wave(strip.Color(127,0,0), 4, 20);        // candy cane
+    wave(strip.Color(0,0,100), 2, 40);        // icy
     for (int j = 0; j < 10; j++) {
         for (int i = 1; i <= N_COLORS; i++ ) {
             merge(colors[i % N_COLORS], (j + i) % 2, 2);
         }
     }
+    rainbowJump(5);
     stack(colors[4], 0, 1, 5);
     for (int i = 0; i < N_COLORS - 2; i++) {
-        stack(colors[i], colors[(i - 1) % N_COLORS], i % 2, 0);
+        stack(colors[i], colors[(i - 1) % N_COLORS], i % 2, 5);
     }
-    rainbowCycleWave(0);
+    stack(colors[N_COLORS - 3], colors[(N_COLORS - 4) % N_COLORS], 1, 5);
+    for (int i = 1; i < N_COLORS; i++) {
+        candyCane(colors[i], colors[(i - 1) % N_COLORS], 3, 7, 100);
+    }
+    for (int i = 0; i < N_COLORS; i++) {
+      colorWipe(colors[i], i % 2, 20);
+    }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -930,6 +940,20 @@ void merge(uint32_t c1, boolean fromEdges, uint8_t wait) {
     }
 }
 
+void rainbowJump(uint8_t wait) {
+  for (int i = 0; i < N_LEDS; i++) {
+    strip.setPixelColor(i, strip.Color(127, 127, 127));
+  }
+  for (int i = 0, j = 314; i < 315 && j >=0; i++, j--) {
+    for (int k = 0; k < N_COLORS - 1; k++) { // (N_COLORS-1) to avoid using the white final color. This could probably be cleaned up by taking advantage of the white fill color being in this array
+      strip.setPixelColor((i+k) % N_LEDS, colors[k]);
+    }
+    strip.setPixelColor((i-1) % N_LEDS, strip.Color(127, 127, 127));
+    strip.show();
+    delay(wait);
+  }
+}
+
 // Sine wave effect
 #define PI 3.14159265
 void wave(uint32_t c, int cycles, uint8_t wait) {
@@ -994,6 +1018,26 @@ void stack(uint32_t c1, uint32_t c2, boolean downDirection, uint8_t wait) {
             delay(wait);
         }
     }    
+}
+
+// fill the dots one after the other with said color
+// good for testing purposes
+void colorWipe(uint32_t c, boolean startFromZero, uint8_t wait) {
+  int i;
+
+  if (startFromZero) {
+    for (i=0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, c);
+        strip.show();
+        delay(wait);
+    }
+  } else {
+    for (i = N_LEDS - 1; i >=0; i--) {
+      strip.setPixelColor(i, c);
+      strip.show();
+      delay(wait);
+    }
+  }
 }
 
 /* Helper functions */
